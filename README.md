@@ -6,6 +6,8 @@ Live preview emails developed with react.email
 
 Live demo - https://barryloh.github.io/react-email-previewer
 
+![Screenshot](./screenshots/screenshot.jpg)
+
 ## Features
 
 1. Input email templates with [react.email](https://react.email/) and preview how it looks like
