@@ -1,5 +1,7 @@
 # react-email previewer
 
+[![Build & deploy](https://github.com/barryloh/react-email-previewer/actions/workflows/build-deploy.yml/badge.svg)](https://github.com/barryloh/react-email-previewer/actions/workflows/build-deploy.yml)
+
 Live preview emails developed with react.email
 
 Live demo - https://barryloh.github.io/react-email-previewer
