@@ -18,3 +18,4 @@ Live demo - https://barryloh.github.io/react-email-previewer
 ## License
 
 MIT
+
