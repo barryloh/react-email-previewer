@@ -3,6 +3,7 @@ import { renderAsync } from '@react-email/render';
 import parse, { attributesToProps, domToReact } from 'html-react-parser';
 import { Head, Body, Preview, Img, Section, Text, Hr, Button as ButtonEmail, Container, Link } from '@react-email/components';
 import JSON5 from 'json5'
+import { Github } from 'lucide-react';
 
 import {
   ResizableHandle,
@@ -188,8 +189,17 @@ export default function PreviewerPage() {
       <ResizableHandle withHandle />
       <ResizablePanel className={"min-w-[600px]"} defaultSize={50}>
         <div className="flex flex-col h-[100%]">
-          <div className={"flex flex-row items-center h-[40px] border-b-2 px-4"}>
+          <div className={"flex flex-row items-center h-[48px] border-b-2 px-4"}>
             <Button type={"button"} size="sm" onClick={showValue}>Preview</Button>
+            <div className="h-[1px] flex-1" />
+            <Button className="mr-1" variant="outline" type="button" size="sm" asChild>
+              <a className="block" href="https://react.email" target="_blank" rel="noopener noreferrer">
+                <p>react.email</p>
+              </a>
+            </Button>
+            <Button variant="ghost" type="button" size="icon" asChild>
+              <a href="https://github.com/barryloh/react-email-previewer" target="_blank" rel="noopener noreferrer"><Github size={16} /></a>
+            </Button>
           </div>
           <div className="flex-1">
             {templateError ? (
