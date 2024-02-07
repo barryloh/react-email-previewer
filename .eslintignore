@@ -1,0 +1,9 @@
+.firebase/*
+.git/*
+.storybook/*
+/node_modules/*
+
+# Ignore built files
+build/*
+public/*
+server/*
