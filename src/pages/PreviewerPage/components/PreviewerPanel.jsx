@@ -93,14 +93,12 @@ export default function PreviewerPanel({ codeEditorRef }) {
           </a>
         </Button>
       </Toolbar>
-      <div className="flex-1">
-        {view === 'desktop' ? (
-          <EmailPreviewer template={template} templateError={templateError} />
-        ) : (
-          <></>
-        )}
-        {view === 'code' ? <HTMLCodePreviewer template={template} /> : <></>}
-      </div>
+      {view === 'desktop' ? (
+        <EmailPreviewer template={template} templateError={templateError} />
+      ) : (
+        <></>
+      )}
+      {view === 'code' ? <HTMLCodePreviewer template={template} /> : <></>}
     </div>
   );
 }
