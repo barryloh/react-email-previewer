@@ -1,5 +1,142 @@
-import {attributesToProps} from "html-react-parser";
+import * as React from 'react';
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Hr,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Section,
+  Text,
+} from '@react-email/components';
 
+export function getReactEmailComponentFromText(tagName) {
+  switch (tagName) {
+    case 'Html':
+      return Html;
+
+    case 'Head':
+      return Head;
+
+    case 'Preview':
+      return Preview;
+
+    case 'Body':
+      return Body;
+
+    case 'Button':
+      return Button;
+
+    case 'Container':
+      return Container;
+
+    case 'Hr':
+      return Hr;
+
+    case 'Img':
+      return Img;
+
+    case 'Link':
+      return Link;
+
+    case 'Section':
+      return Section;
+
+    case 'Text':
+      return Text;
+  }
+
+  return null;
+}
+
+export function parseProperty(property) {
+  const {
+    key: { name: propertyKey },
+    value,
+  } = property;
+
+  if (value.type === 'ObjectExpression') {
+    const propertyValue = {};
+
+    value.properties.map((valueProperty) => {
+      const parsedValues = parseProperty(valueProperty);
+      // console.log('parsedValues:', parsedValues);
+
+      propertyValue[parsedValues.key] = parsedValues.value;
+    });
+
+    return {
+      key: propertyKey,
+      value: propertyValue,
+    };
+  }
+  if (value.type === 'Literal') {
+    return {
+      key: propertyKey,
+      value: value.value,
+    };
+  }
+
+  return null;
+}
+
+export function parseElement(element) {
+  if (element.type === 'JSXElement') {
+    // console.log('>>:', element.openingElement.name.name, element);
+    const component = getReactEmailComponentFromText(
+      element.openingElement.name.name,
+    );
+
+    const { attributes } = element.openingElement;
+
+    const props = {};
+    if (attributes && attributes.length > 0) {
+      attributes.forEach(({ name: { name: attributeKey }, value }) => {
+        let propValue = null;
+
+        if (value.type === 'JSXExpressionContainer') {
+          propValue = {};
+          value.expression.properties.forEach((property) => {
+            const cv = parseProperty(property);
+            // console.log('cv:', cv);
+
+            propValue[cv.key] = cv.value;
+          });
+        } else if (value.type === 'Literal') {
+          propValue = value.value;
+        }
+
+        props[attributeKey] = propValue;
+      });
+    }
+
+    // console.log(props);
+
+    const children = element.children.map((child) => parseElement(child));
+    // console.log('children:', children);
+
+    const reactElement = React.createElement(
+      component,
+      props,
+      children.length > 0
+        ? children.length === 1
+          ? children[0]
+          : children
+        : null,
+    );
+    return reactElement;
+  }
+  if (element.type === 'JSXText') {
+    return element.value;
+  }
+
+  return <></>;
+}
+
+/*
 export function parseAttributesToReactProps(domNode) {
   let props = {};
 
@@ -67,3 +204,4 @@ export function parseAttributesToReactProps(domNode) {
 
   return props;
 }
+*/
