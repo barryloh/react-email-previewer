@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.css": "/react-email-previewer/static/css/main.0fcc7532.css",
-    "main.js": "/react-email-previewer/static/js/main.20afda71.js",
+    "main.css": "/react-email-previewer/static/css/main.d196424e.css",
+    "main.js": "/react-email-previewer/static/js/main.e8b6443e.js",
     "static/js/27.dbff3a99.chunk.js": "/react-email-previewer/static/js/27.dbff3a99.chunk.js",
     "index.html": "/react-email-previewer/index.html"
   },
   "entrypoints": [
-    "static/css/main.0fcc7532.css",
-    "static/js/main.20afda71.js"
+    "static/css/main.d196424e.css",
+    "static/js/main.e8b6443e.js"
   ]
 }
