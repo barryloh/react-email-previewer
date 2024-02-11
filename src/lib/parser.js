@@ -83,7 +83,7 @@ export function parseProperty(property) {
   return null;
 }
 
-export function parseElement(element) {
+export function parseElement(element, styles) {
   if (element.type === 'JSXElement') {
     // console.log('>>:', element.openingElement.name.name, element);
     const component = getReactEmailComponentFromText(
@@ -99,12 +99,20 @@ export function parseElement(element) {
 
         if (value.type === 'JSXExpressionContainer') {
           propValue = {};
-          value.expression.properties.forEach((property) => {
-            const cv = parseProperty(property);
-            // console.log('cv:', cv);
 
-            propValue[cv.key] = cv.value;
-          });
+          if (value.expression.type === 'Identifier') {
+            if (styles[value.expression.name]) {
+              propValue = styles[value.expression.name];
+            }
+          } else if (value.expression.type === 'TemplateLiteral') {
+            propValue = value.expression.quasis[0].value.cooked;
+          } else if (value.expression.type === 'ObjectExpression') {
+            value.expression.properties.forEach((property) => {
+              const cv = parseProperty(property);
+
+              propValue[cv.key] = cv.value;
+            });
+          }
         } else if (value.type === 'Literal') {
           propValue = value.value;
         }
@@ -115,7 +123,9 @@ export function parseElement(element) {
 
     // console.log(props);
 
-    const children = element.children.map((child) => parseElement(child));
+    const children = element.children.map((child) =>
+      parseElement(child, styles),
+    );
     // console.log('children:', children);
 
     const reactElement = React.createElement(
@@ -134,6 +144,41 @@ export function parseElement(element) {
   }
 
   return <></>;
+}
+
+export function parseCodeStyles(nodes) {
+  if (nodes.type !== 'Program') {
+    console.warn('Invalid nodes');
+    throw new Error('Invalid nodes');
+  }
+
+  const styles = {};
+
+  nodes.body.forEach((node) => {
+    if (node.type === 'VariableDeclaration' && node.declarations) {
+      const [declaration] = node.declarations;
+
+      if (
+        declaration.type === 'VariableDeclarator' &&
+        declaration.init.type === 'ObjectExpression'
+      ) {
+        const variableName = declaration.id.name;
+
+        const values = {};
+        declaration.init.properties.forEach((property) => {
+          const parsedProperty = parseProperty(property);
+          if (parsedProperty) {
+            const { key, value } = parsedProperty;
+            values[key] = value;
+          }
+        });
+
+        styles[variableName] = values;
+      }
+    }
+  });
+
+  return styles;
 }
 
 /*

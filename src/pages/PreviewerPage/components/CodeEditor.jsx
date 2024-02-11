@@ -3,14 +3,29 @@ import Editor from '@monaco-editor/react';
 import Toolbar from '../../../components/toolbar';
 import { Combobox } from '../../../components/ui/combobox';
 import { getTemplates } from '../../../templates/templates';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '../../../components/ui/resizable';
 
-export default function CodeEditor({ onMount }) {
+export default function CodeEditor({ onMount, onStylesEditorMount }) {
   const codeEditorRef = React.useRef(null);
+  const stylesEditorRef = React.useRef(null);
 
   const onEditorMount = (editor) => {
     codeEditorRef.current = editor;
+
     if (onMount) {
       onMount(editor);
+    }
+  };
+
+  const _onStylesEditorMount = (editor) => {
+    stylesEditorRef.current = editor;
+
+    if (onStylesEditorMount) {
+      onStylesEditorMount(editor);
     }
   };
 
@@ -29,19 +44,38 @@ export default function CodeEditor({ onMount }) {
           onSelectItem={onSelectItem}
         />
       </Toolbar>
-      <Editor
-        height="100vh"
-        defaultLanguage="javascript"
-        theme="vs-dark"
-        options={{
-          inlineSuggest: true,
-          fontSize: '12px',
-          formatOnType: true,
-          autoClosingBrackets: true,
-          minimap: { scale: 10 },
-        }}
-        onMount={onEditorMount}
-      />
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel className="min-h-[60%]" defaultSize={80}>
+          <Editor
+            height="100vh"
+            defaultLanguage="javascript"
+            theme="vs-dark"
+            options={{
+              inlineSuggest: true,
+              fontSize: '12px',
+              formatOnType: true,
+              autoClosingBrackets: true,
+              minimap: { scale: 10 },
+            }}
+            onMount={onEditorMount}
+          />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel className="min-h-[5%]" defaultSize={20}>
+          <Editor
+            defaultLanguage="javascript"
+            theme="vs-dark"
+            options={{
+              inlineSuggest: true,
+              fontSize: '12px',
+              formatOnType: true,
+              autoClosingBrackets: true,
+              minimap: { scale: 10 },
+            }}
+            onMount={_onStylesEditorMount}
+          />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import PreviewerPanel from './components/PreviewerPanel';
 
 export default function PreviewerPage() {
   const codeEditorRef = React.useRef(null);
+  const stylesEditorRef = React.useRef(null);
 
   const onCodeEditorMount = (editor) => {
     codeEditorRef.current = editor;
@@ -18,11 +19,19 @@ export default function PreviewerPage() {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel className="min-w-[500px]" defaultSize={50}>
-        <CodeEditor onMount={onCodeEditorMount} />
+        <CodeEditor
+          onMount={onCodeEditorMount}
+          onStylesEditorMount={(_editor) => {
+            stylesEditorRef.current = _editor;
+          }}
+        />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel className="min-w-[600px]" defaultSize={50}>
-        <PreviewerPanel codeEditorRef={codeEditorRef} />
+        <PreviewerPanel
+          codeEditorRef={codeEditorRef}
+          stylesEditorRef={stylesEditorRef}
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

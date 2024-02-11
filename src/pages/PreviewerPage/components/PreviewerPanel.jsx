@@ -12,15 +12,26 @@ import { Button } from '../../../components/ui/button';
 import Toolbar from '../../../components/toolbar';
 import EmailPreviewer from './EmailPreviewer';
 import HTMLCodePreviewer from './HTMLCodePreviewer';
-import { parseElement } from '../../../lib/parser';
+import { parseCodeStyles, parseElement } from '../../../lib/parser';
 
-export default function PreviewerPanel({ codeEditorRef }) {
+export default function PreviewerPanel({ codeEditorRef, stylesEditorRef }) {
   const [view, setView] = React.useState('desktop');
   const [template, setTemplate] = React.useState('');
   const [templateError, setTemplateError] = React.useState(null);
 
   const showValue = async () => {
+    if (!codeEditorRef.current || !stylesEditorRef.current) {
+      console.warn('Code editors are not ready');
+      return;
+    }
+
     try {
+      const styleAsCodes = stylesEditorRef.current.getValue();
+      const parsed = acorn.parse(styleAsCodes, {
+        ecmaVersion: 6,
+      });
+      const styles = parseCodeStyles(parsed);
+
       setTemplateError(null);
 
       const code = codeEditorRef.current.getValue();
@@ -32,7 +43,7 @@ export default function PreviewerPanel({ codeEditorRef }) {
 
       if (elements.body && elements.body.length > 0) {
         const parsedElements = elements.body[0].expression;
-        const reactElements = parseElement(parsedElements);
+        const reactElements = parseElement(parsedElements, styles);
 
         const parsedHtml = await renderAsync(reactElements, { pretty: true });
         setTemplate(parsedHtml);
