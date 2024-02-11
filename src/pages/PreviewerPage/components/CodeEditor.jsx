@@ -30,7 +30,15 @@ export default function CodeEditor({ onMount, onStylesEditorMount }) {
   };
 
   const onSelectItem = (item) => {
-    codeEditorRef.current.setValue(item.template);
+    const { styles, template } = item.template;
+
+    if (codeEditorRef.current) {
+      codeEditorRef.current.setValue(template);
+    }
+
+    if (stylesEditorRef.current) {
+      stylesEditorRef.current.setValue(styles);
+    }
   };
 
   return (

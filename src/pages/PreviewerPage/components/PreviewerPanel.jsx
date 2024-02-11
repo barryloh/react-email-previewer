@@ -26,20 +26,26 @@ export default function PreviewerPanel({ codeEditorRef, stylesEditorRef }) {
     }
 
     try {
+      console.debug('** Parsing styles ** ');
       const styleAsCodes = stylesEditorRef.current.getValue();
       const parsed = acorn.parse(styleAsCodes, {
-        ecmaVersion: 6,
+        ecmaVersion: 9,
       });
       const styles = parseCodeStyles(parsed);
+      console.debug({ styles });
 
       setTemplateError(null);
 
+      console.debug('** Parsing codes ** ');
       const code = codeEditorRef.current.getValue();
       const elements = acorn.Parser.extend(
         acornJsx({
           allowNamespacedObjects: true,
         }),
-      ).parse(code);
+      ).parse(code, {
+        ecmaVersion: 9,
+      });
+      console.debug({ elements });
 
       if (elements.body && elements.body.length > 0) {
         const parsedElements = elements.body[0].expression;

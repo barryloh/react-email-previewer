@@ -2,13 +2,18 @@ import * as React from 'react';
 import {
   Body,
   Button,
+  CodeBlock,
+  CodeInline,
+  Column,
   Container,
   Head,
+  Heading,
   Hr,
   Html,
   Img,
   Link,
   Preview,
+  Row,
   Section,
   Text,
 } from '@react-email/components';
@@ -47,37 +52,71 @@ export function getReactEmailComponentFromText(tagName) {
 
     case 'Text':
       return Text;
+
+    case 'Heading':
+      return Heading;
+
+    case 'Row':
+      return Row;
+
+    case 'Column':
+      return Column;
+
+    case 'CodeBlock':
+      return CodeBlock;
+
+    case 'CodeInline':
+      return CodeInline;
   }
 
-  return null;
+  return tagName;
 }
 
 export function parseProperty(property) {
-  const {
-    key: { name: propertyKey },
-    value,
-  } = property;
+  if (property.type === 'Property') {
+    const {
+      key: { name: propertyKey },
+      value,
+    } = property;
 
-  if (value.type === 'ObjectExpression') {
-    const propertyValue = {};
+    if (value.type === 'ObjectExpression') {
+      const propertyValue = {};
 
-    value.properties.map((valueProperty) => {
-      const parsedValues = parseProperty(valueProperty);
-      // console.log('parsedValues:', parsedValues);
+      value.properties.map((valueProperty) => {
+        const parsedValues = parseProperty(valueProperty);
+        // console.log('parsedValues:', parsedValues);
 
-      propertyValue[parsedValues.key] = parsedValues.value;
-    });
+        propertyValue[parsedValues.key] = parsedValues.value;
+      });
 
-    return {
-      key: propertyKey,
-      value: propertyValue,
-    };
-  }
-  if (value.type === 'Literal') {
-    return {
-      key: propertyKey,
-      value: value.value,
-    };
+      return [
+        {
+          key: propertyKey,
+          value: propertyValue,
+        },
+      ];
+    }
+    if (value.type === 'Literal') {
+      return [
+        {
+          key: propertyKey,
+          value: value.value,
+        },
+      ];
+    }
+  } else if (property.type === 'SpreadElement') {
+    if (property.argument.type === 'Identifier') {
+      return [
+        {
+          refVariable: property.argument.name,
+        },
+      ];
+    }
+    if (property.argument.type === 'ObjectExpression') {
+      return property.argument.properties.flatMap((prop) =>
+        parseProperty(prop),
+      );
+    }
   }
 
   return null;
@@ -166,10 +205,25 @@ export function parseCodeStyles(nodes) {
 
         const values = {};
         declaration.init.properties.forEach((property) => {
-          const parsedProperty = parseProperty(property);
-          if (parsedProperty) {
-            const { key, value } = parsedProperty;
-            values[key] = value;
+          const parsedProperties = parseProperty(property);
+          if (parsedProperties) {
+            parsedProperties.forEach(({ key, value, refVariable }) => {
+              if (refVariable) {
+                if (styles[refVariable]) {
+                  Object.entries(styles[refVariable]).forEach(
+                    ([key, value]) => {
+                      values[key] = value;
+                    },
+                  );
+                } else {
+                  console.warn(
+                    `No variable ${refVariable} declared. Skip processing.`,
+                  );
+                }
+              } else {
+                values[key] = value;
+              }
+            });
           }
         });
 
