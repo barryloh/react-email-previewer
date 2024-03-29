@@ -16,6 +16,7 @@ import {
   Row,
   Section,
   Text,
+  Font,
 } from '@react-email/components';
 
 export function getReactEmailComponentFromText(tagName) {
@@ -67,6 +68,9 @@ export function getReactEmailComponentFromText(tagName) {
 
     case 'CodeInline':
       return CodeInline;
+
+    case 'Font':
+      return Font;
   }
 
   return tagName;
