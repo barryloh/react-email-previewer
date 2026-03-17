@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Code2, Github, Laptop } from 'lucide-react';
-import { renderAsync } from '@react-email/render';
+import { render } from '@react-email/render';
 import * as acorn from 'acorn';
 import * as acornJsx from 'acorn-jsx';
 
@@ -51,7 +51,7 @@ export default function PreviewerPanel({ codeEditorRef, stylesEditorRef }) {
         const parsedElements = elements.body[0].expression;
         const reactElements = parseElement(parsedElements, styles);
 
-        const parsedHtml = await renderAsync(reactElements, { pretty: true });
+        const parsedHtml = await render(reactElements, { pretty: true });
         setTemplate(parsedHtml);
       } else {
         setTemplate('');

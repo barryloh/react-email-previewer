@@ -8,7 +8,6 @@ import {
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,
@@ -17,6 +16,7 @@ import {
   Section,
   Text,
   Font,
+  Tailwind,
 } from '@react-email/components';
 
 export function getReactEmailComponentFromText(tagName) {
@@ -71,9 +71,13 @@ export function getReactEmailComponentFromText(tagName) {
 
     case 'Font':
       return Font;
-  }
 
-  return tagName;
+    case 'Tailwind':
+      return Tailwind;
+
+    default:
+      return tagName;
+  }
 }
 
 export function parseProperty(property) {
